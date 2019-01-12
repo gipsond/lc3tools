@@ -85,8 +85,7 @@ export default {
         current_file: "",
         content_changed: false
       },
-      console_str: "",
-      editor_theme: "textmate"
+      console_str: ""
     };
   },
   components: {
