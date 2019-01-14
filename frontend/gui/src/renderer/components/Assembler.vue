@@ -37,7 +37,7 @@
           <span>Open File</span>
         </v-tooltip>
         <v-tooltip right>
-          <v-list-tile slot="activator" @click="assemble()">
+          <v-list-tile slot="activator" @click="assemble()" id="build-button">
             <v-list-tile-action>
               <v-icon large>build</v-icon>
             </v-list-tile-action>
