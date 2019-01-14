@@ -7,9 +7,8 @@ describe('Assembler', function () {
 
     it('shows an error when there is nothing to assemble', function () {
         return this.app.client.click('#build-button')
-        .then(result => {
-            return this.app.client.getHTML('#console', false)
-        }).then(consoleContents => {
+        .then(() => { return this.app.client.getHTML('#console', false) })
+        .then(consoleContents => {
             consoleContents.should.equal('\
 <span class="text-bold">\
 <span class="text-red">\
@@ -26,16 +25,10 @@ could not open  for reading\
 
     it('successfully types the minimal LC-3 program', function () {
         return this.app.client.click('div.ace_content')
-        .then(result => {
-            return this.app.client.keys('.ORIG x3000') 
-        }).then(result => {
-            return this.app.client.keys('Enter')
-        }).then(result => {
-            return this.app.client.keys('HALT')
-        }).then(result => {
-            return this.app.client.keys('Enter')
-        }).then(result => {
-            return this.app.client.keys('.END')
-        })
+        .then(() => { return this.app.client.keys('.ORIG x3000') })
+        .then(() => { return this.app.client.keys('Enter')       })
+        .then(() => { return this.app.client.keys('HALT')        })
+        .then(() => { return this.app.client.keys('Enter')       })
+        .then(() => { return this.app.client.keys('.END')        })
     })
 })
