@@ -22,18 +22,8 @@ could not open  for reading\
         })
     })
 
-    it('successfully saves and assembles the minimal LC-3 program', function () {
-        return this.app.client.click('div.ace_content')
-        .then(() => { return this.app.client.keys('.ORIG x3000') })
-        .then(() => { return this.app.client.keys('Enter')       })
-        .then(() => { return this.app.client.keys('HALT')        })
-        .then(() => { return this.app.client.keys('Enter')       })
-        .then(() => { return this.app.client.keys('.END')        })
-        .then(() => { return this.app.client.click('#save-button') })
-        .then(() => { return this.app.client.click('#build-button')})
-        .then(() => { return this.app.client.getHTML('#console', false) })
-        .then(consoleContents => {
-            consoleContents.should.equal('\
+    describe('saves and assembles', function () {
+        const successMessage = '\
 <span class="text-bold">\
 <span class="text-green">\
 info: \
@@ -53,7 +43,50 @@ info: \
 assembly successful\
 </span>\
 <br>'
-            )
-        })
+        
+        const saveAndAssemble = function (client, lines) {
+            // Start testing command by clicking text editor
+            var command = client.click('div.ace_content')
+
+            // For each line in the 'lines' parameter,
+            // add a command to type that line and to type 'Enter'
+            const typeLineCmds = lines.map(line => (() => { return client.keys(line) }))
+            for (var typeLineCmd of typeLineCmds) {
+                command = command.then(typeLineCmd)
+                                 .then(() => { return client.keys('Enter') })
+            }
+
+            // Add commands to save and build,
+            // then check console for success
+            command = command.then(() => { return client.click('#save-button') })
+                             .then(() => { return client.click('#build-button') })
+                             .then(() => { return client.getHTML('#console', false) })
+                             .then(consoleContents => {
+                                 consoleContents.should.equal(successMessage)
+                             })
+
+            // Return generated command
+            return command
+        }
+
+        it('the minimal LC-3 program', function () {
+            return saveAndAssemble(this.app.client,
+                ['.ORIG x3000'
+                , 'HALT'
+                , '.END'
+                ]
+        )})
+
+        it('an addition LC-3 program', function () {
+            return saveAndAssemble(this.app.client,
+                ['.ORIG x3000'
+                , 'ADD R0, R0, R0'
+                , 'HALT'
+                , '.END'
+                ]
+        )})
     })
+    
+
+    
 })
