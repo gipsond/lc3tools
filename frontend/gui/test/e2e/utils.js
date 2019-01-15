@@ -17,7 +17,11 @@ export default {
       startTimeout: 10000,
       waitTimeout: 10000
     })
+    fakeDialog.apply(this.app)
 
     return this.app.start()
+    .then(() => {
+      fakeDialog.mock([ { method: 'showSaveDialog', value: generatedFilePath + 'test.asm' } ])
+    })
   }
 }

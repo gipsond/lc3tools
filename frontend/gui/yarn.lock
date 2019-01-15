@@ -8440,6 +8440,11 @@ spdy@^3.4.1:
     select-hose "^2.0.0"
     spdy-transport "^2.0.18"
 
+spectron-fake-dialog@~0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/spectron-fake-dialog/-/spectron-fake-dialog-0.0.1.tgz#ffd5cfadcac64eb957340389f047529c4a68e23a"
+  integrity sha512-ToNQH3MLVj7aw7oT3CjIvs+r3E2swhx4gNA9Utrorl46aiJetBm3WngK+TOcS15YBm9N1fF34vQP/wQWq99RwA==
+
 spectron@^3.8.0:
   version "3.8.0"
   resolved "https://registry.yarnpkg.com/spectron/-/spectron-3.8.0.tgz#122c3562fd7e92b7cdf6f94094aa495b150dfa51"

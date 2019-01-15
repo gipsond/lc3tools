@@ -14,5 +14,12 @@ global.expect = expect
 global.should = should()
 global.assert = assert
 
+// Set up dialog mocks
+const fakeDialog = require('spectron-fake-dialog')
+global.fakeDialog = fakeDialog
+
+// Set up test filesystem variables
+global.generatedFilePath = __dirname + '\\generated_files\\'
+
 // Require all JS files in `./specs` for Mocha to consume
 require('require-dir')('./specs')

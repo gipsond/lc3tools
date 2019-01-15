@@ -18,7 +18,7 @@
           <span>New File</span>
         </v-tooltip>
         <v-tooltip right>
-          <v-list-tile slot="activator" @click="saveFile()">
+          <v-list-tile slot="activator" @click="saveFile()" id="save-button">
             <v-list-tile-action>
               <v-badge color="orange darken-2" overlap>
                 <v-icon large>save</v-icon>
@@ -97,7 +97,6 @@ export default {
     newFile(content) {
       // Todo: try catch around this
       let new_file = remote.dialog.showSaveDialog();
-
       // Guard against user cancelling
       if (new_file) {
         fs.writeFileSync(new_file, content);
