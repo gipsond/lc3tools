@@ -10,7 +10,7 @@
     >
       <v-list two-line>
         <v-tooltip right>
-          <v-list-tile slot="activator" @click="openFile()">
+          <v-list-tile slot="activator" @click="openFile()" id="open-file-button">
             <v-list-tile-action>
               <v-icon large>folder_open</v-icon>
             </v-list-tile-action>
@@ -18,7 +18,7 @@
           <span>Open File</span>
         </v-tooltip>
         <v-tooltip right>
-          <v-list-tile slot="activator" @click="toggleSimulator('run')">
+          <v-list-tile slot="activator" @click="toggleSimulator('run')" id="toggle-sim-button">
             <v-list-tile-action>
               <v-icon v-if="!sim.running" large>play_arrow</v-icon>
               <v-icon v-else large>pause</v-icon>

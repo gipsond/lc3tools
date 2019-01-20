@@ -21,7 +21,29 @@ export default {
 
     return this.app.start()
     .then(() => {
-      fakeDialog.mock([ { method: 'showSaveDialog', value: generatedFilePath + 'test.asm' } ])
+      fakeDialog.mock(
+        [ { method: 'showSaveDialog', value: generatedFilePath + 'test.asm' }
+        , { method: 'showOpenDialog', value: [generatedFilePath + 'test.obj'] } 
+        ])
     })
+  },
+  saveAndAssemble (client, lines) {
+    // Start testing command by clicking text editor
+    var command = client.click('div.ace_content')
+
+    // For each line in the 'lines' parameter,
+    // add a command to type that line and to type 'Enter'
+    const typeLineCmds = lines.map(line => (() => { return client.keys(line) }))
+    for (var typeLineCmd of typeLineCmds) {
+      command = command.then(typeLineCmd)
+        .then(() => { return client.keys('Enter') })
+    }
+
+    // Add commands to save and build
+    command = command.then(() => { return client.click('#save-button') })
+      .then(() => { return client.click('#build-button') })
+
+    // Return generated command
+    return command
   }
 }

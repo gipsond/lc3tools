@@ -17,4 +17,5 @@ describe('Launch', function () {
         title.should.equal('lc3tools')
       })
   })
+
 })

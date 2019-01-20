@@ -46,33 +46,16 @@ assembly successful\
 <br>'
         
         const saveAssembleAndAssertSuccess = function (client, lines) {
-            // Start testing command by clicking text editor
-            var command = client.click('div.ace_content')
-
-            // For each line in the 'lines' parameter,
-            // add a command to type that line and to type 'Enter'
-            const typeLineCmds = lines.map(line => (() => { return client.keys(line) }))
-            for (var typeLineCmd of typeLineCmds) {
-                command = command.then(typeLineCmd)
-                                 .then(() => { return client.keys('Enter') })
-            }
-
-            // Add commands to save and build,
-            // then check console for success
-            command = command.then(() => { return client.click('#save-button') })
-                             .then(() => { return client.click('#build-button') })
-                             .then(() => { return client.getHTML('#console', false) })
-                             .then(consoleContents => {
-                                 consoleContents.should.equal(successMessage)
-                             })
-
-            // Return generated command
-            return command
+            return utils.saveAndAssemble(client, lines)
+                .then(() => { return client.getHTML('#console', false) })
+                .then(consoleContents => {
+                    consoleContents.should.equal(successMessage)
+                })
         }
 
         it('the minimal LC-3 program', function () {
             return saveAssembleAndAssertSuccess(this.app.client,
-                ['.ORIG x3000'
+                [ '.ORIG x3000'
                 , 'HALT'
                 , '.END'
                 ]
@@ -80,7 +63,7 @@ assembly successful\
 
         it('an addition LC-3 program', function () {
             return saveAssembleAndAssertSuccess(this.app.client,
-                ['.ORIG x4000'
+                [ '.ORIG x4000'
                 , 'ADD R0, R0, R0'
                 , 'HALT'
                 , '.END'
@@ -89,7 +72,7 @@ assembly successful\
 
         it('the "Hello, World!" LC-3 program', function () {
             return saveAssembleAndAssertSuccess(this.app.client,
-                ['.ORIG x3000'
+                [ '.ORIG x3000'
                 , 'LEA R0, GREETING'
                 , 'PUTS'
                 , 'HALT'
@@ -102,7 +85,7 @@ assembly successful\
         it('a long, formatted LC-3 program', function () {
             this.timeout(5000)
             return saveAssembleAndAssertSuccess(this.app.client,
-                ['\t.ORIG x3000' 
+                [ '\t.ORIG x3000' 
                 , 'Back space'
                 , '; Check Palindrome'
                 , '; This program checks if the string at PTR is a palindrome.'

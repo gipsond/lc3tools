@@ -10,10 +10,10 @@
             <v-icon large v-if="!dark_mode">brightness_5</v-icon>
             <v-icon large v-else>brightness_3</v-icon>
           </v-btn>
-          <v-btn large flat exact to="/assembler">
+          <v-btn large flat exact to="/assembler" id="assembler-button">
             <v-icon large>code</v-icon>
           </v-btn>
-          <v-btn large flat exact to="/simulator">
+          <v-btn large flat exact to="/simulator" id='simulator-button'>
             <v-icon large>play_arrow</v-icon>
           </v-btn>
         </v-toolbar-items>
