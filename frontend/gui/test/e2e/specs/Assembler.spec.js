@@ -1,7 +1,7 @@
 import utils from '../utils'
 
 describe('Assembler', function () {
-    beforeEach(utils.beforeEach)
+    beforeEach(utils.beforeEachAsm)
     afterEach(utils.afterEach)
 
     it('shows an error message when there is nothing to assemble', function () {
@@ -22,6 +22,24 @@ could not open  for reading\
         })
     })
 
+    it('shows the correct filename when a new file is opened', function () {
+        return utils.saveAndAssemble(this.app.client,
+            [ '.ORIG x3000'
+            , 'HALT'
+            , '.END'
+            ]
+        )
+        .then(() => { return this.app.client.getText('#filename') })
+        .then(filename => {
+            filename.should.equal(asmFilename)
+        })
+        .then(() => { return this.app.client.click('#open-button') })
+        .then(() => { return this.app.client.getText('#filename') })
+        .then(filename => {
+            filename.should.equal('hello_world.asm')
+        })
+    })
+
     describe('saves and assembles', function () {
 
         const successMessage = '\
@@ -31,8 +49,8 @@ info: \
 </span>\
 </span>\
 <span class="text-bold">\
-attemping to assemble \'' + generatedFilePath + 'test.asm\'\
- into \'' + generatedFilePath + 'test.obj\'\
+attemping to assemble \'' + generatedFilePath + asmFilename + '\'\
+ into \'' + generatedFilePath + objFilename + '\'\
 </span>\
 <br>\
 <span class="text-bold">\
@@ -51,6 +69,10 @@ assembly successful\
                 .then(consoleContents => {
                     consoleContents.should.equal(successMessage)
                 })
+                .then(() => { return client.getText('#filename') })
+                .then(filename => {
+                    filename.should.equal(asmFilename)
+                })
         }
 
         it('the minimal LC-3 program', function () {
@@ -59,7 +81,8 @@ assembly successful\
                 , 'HALT'
                 , '.END'
                 ]
-        )})
+            )
+        })
 
         it('an addition LC-3 program', function () {
             return saveAssembleAndAssertSuccess(this.app.client,
@@ -68,7 +91,8 @@ assembly successful\
                 , 'HALT'
                 , '.END'
                 ]
-        )})
+            )
+        })
 
         it('the "Hello, World!" LC-3 program', function () {
             return saveAssembleAndAssertSuccess(this.app.client,

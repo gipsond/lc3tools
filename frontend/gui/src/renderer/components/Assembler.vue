@@ -29,7 +29,7 @@
           <span>Save File</span>
         </v-tooltip>
         <v-tooltip right>
-          <v-list-tile slot="activator" @click="openFile()">
+          <v-list-tile slot="activator" @click="openFile()" id="open-button">
             <v-list-tile-action>
               <v-icon large>folder_open</v-icon>
             </v-list-tile-action>

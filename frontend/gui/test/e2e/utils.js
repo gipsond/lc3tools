@@ -9,7 +9,21 @@ export default {
       return this.app.stop()
     }
   },
-  beforeEach () {
+
+  beforeEach() {
+    this.timeout(10000)
+    this.app = new Application({
+      path: electron,
+      args: ['dist/electron/main.js'],
+      startTimeout: 10000,
+      waitTimeout: 10000
+    })
+    fakeDialog.apply(this.app)
+
+    return this.app.start()
+  },
+
+  beforeEachAsm () {
     this.timeout(10000)
     this.app = new Application({
       path: electron,
@@ -22,11 +36,34 @@ export default {
     return this.app.start()
     .then(() => {
       fakeDialog.mock(
-        [ { method: 'showSaveDialog', value: generatedFilePath + 'test.asm' }
-        , { method: 'showOpenDialog', value: [generatedFilePath + 'test.obj'] } 
-        ])
+        [ { method: 'showSaveDialog', value: generatedFilePath + asmFilename }
+        , { method: 'showOpenDialog', value: [generatedFilePath + 'hello_world.asm'] } 
+        ]
+      )
     })
   },
+
+  beforeEachSim() {
+    this.timeout(10000)
+    this.app = new Application({
+      path: electron,
+      args: ['dist/electron/main.js'],
+      startTimeout: 10000,
+      waitTimeout: 10000
+    })
+    fakeDialog.apply(this.app)
+
+    return this.app.start()
+      .then(() => {
+        fakeDialog.mock(
+          [ { method: 'showSaveDialog', value: generatedFilePath + asmFilename }
+          , { method: 'showOpenDialog', value: [generatedFilePath + objFilename] }
+          ]
+        )
+      })
+  },
+
+
   saveAndAssemble (client, lines) {
     // Start testing command by clicking text editor
     var command = client.click('div.ace_content')

@@ -1,7 +1,7 @@
 import utils from '../utils'
 
 describe('Simulator', function () {
-    beforeEach(utils.beforeEach)
+    beforeEach(utils.beforeEachSim)
     afterEach(utils.afterEach)
 
     const firstMemLabelSelector = '#memview > div > div > table > tbody > tr:nth-child(1) > div:nth-child(3) > strong'
@@ -30,7 +30,7 @@ describe('Simulator', function () {
     })
 
     it('runs and displays results for the "Hello, World!" program', function () {
-        this.timeout(3000);
+        this.timeout(5000);
         return utils.saveAndAssemble(this.app.client,
             [ '.ORIG x3000'
             , 'LEA R0, GREETING'

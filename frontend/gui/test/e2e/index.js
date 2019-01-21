@@ -20,6 +20,8 @@ global.fakeDialog = fakeDialog
 
 // Set up test filesystem variables
 global.generatedFilePath = __dirname + '\\generated_files\\'
+global.asmFilename = 'test.asm'
+global.objFilename = 'test.obj'
 
 // Require all JS files in `./specs` for Mocha to consume
 require('require-dir')('./specs')
