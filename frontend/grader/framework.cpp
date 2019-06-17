@@ -13,6 +13,7 @@ struct CLIArgs
 };
 
 void setup(void);
+void shutdown(void);
 void testBringup(lc3::sim & sim);
 void testTeardown(lc3::sim & sim);
 
@@ -82,6 +83,7 @@ int main(int argc, char * argv[])
 
     lc3::ConsolePrinter asm_printer;
     lc3::as assembler(asm_printer, args.print_level_override ? args.print_level : 0);
+    lc3::conv converter(asm_printer, args.print_level_override ? args.print_level : 0);
 
     std::vector<std::string> obj_filenames;
     bool valid_program = true;
@@ -90,7 +92,7 @@ int main(int argc, char * argv[])
         if(filename[0] != '-') {
             std::pair<bool, std::string> result;
             if(endsWith(filename, ".bin")) {
-                result = assembler.convertBin(filename);
+                result = converter.convertBin(filename);
             } else {
                 result = assembler.assemble(filename);
             }
@@ -98,6 +100,10 @@ int main(int argc, char * argv[])
             if(! result.first) { valid_program = false; }
             obj_filenames.push_back(result.second);
         }
+    }
+
+    if(obj_filenames.size() == 0) {
+        return 1;
     }
 
     setup();
@@ -109,7 +115,7 @@ int main(int argc, char * argv[])
         for(TestCase const & test : tests) {
             BufferedPrinter sim_printer(args.print_output);
             FileInputter sim_inputter;
-            lc3::sim simulator(sim_printer, sim_inputter, "lc3os.obj",
+            lc3::sim simulator(sim_printer, sim_inputter,
                 args.print_level_override ? args.print_level : 1, true);
 
             testBringup(simulator);
@@ -143,7 +149,7 @@ int main(int argc, char * argv[])
 
             float percent_points_earned = ((float) verify_valid) / verify_count;
             uint32_t points_earned = (uint32_t) ( percent_points_earned * test.points);
-            std::cout << "test points earned: " << points_earned << "/" << test.points << " ("
+            std::cout << "Test points earned: " << points_earned << "/" << test.points << " ("
                       << (percent_points_earned * 100) << "%)\n";
             std::cout << "==========\n";
 
@@ -158,8 +164,10 @@ int main(int argc, char * argv[])
     } else {
         percent_points_earned = ((float) total_points_earned) / total_possible_points;
     }
-    std::cout << "total points earned: " << total_points_earned << "/" << total_possible_points << " ("
+    std::cout << "Total points earned: " << total_points_earned << "/" << total_possible_points << " ("
               << (percent_points_earned * 100) << "%)\n";
+
+    shutdown();
 
     return 0;
 }
