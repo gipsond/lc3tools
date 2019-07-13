@@ -21,7 +21,6 @@ std::vector<TestCase> tests;
 uint32_t verify_count;
 uint32_t verify_valid;
 
-
 bool endsWith(std::string const & search, std::string const & suffix)
 {
     if(suffix.size() > search.size()) { return false; }
@@ -84,15 +83,15 @@ int main(int argc, char * argv[])
     for(int i = 1; i < argc; i += 1) {
         std::string filename(argv[i]);
         if(filename[0] != '-') {
-            std::pair<bool, std::string> result;
+            lc3::optional<std::string> result;
             if(endsWith(filename, ".bin")) {
                 result = converter.convertBin(filename);
             } else {
                 result = assembler.assemble(filename);
             }
 
-            if(! result.first) { valid_program = false; }
-            obj_filenames.push_back(result.second);
+            if(! result) { valid_program = false; }
+            obj_filenames.push_back(*result);
         }
     }
 
@@ -109,7 +108,7 @@ int main(int argc, char * argv[])
         for(TestCase const & test : tests) {
             BufferedPrinter sim_printer(args.print_output);
             StringInputter sim_inputter;
-            lc3::sim simulator(sim_printer, sim_inputter,
+            lc3::sim simulator(sim_printer, sim_inputter, false,
                 args.print_level_override ? args.print_level : 1, true);
 
             testBringup(simulator);
@@ -126,14 +125,14 @@ int main(int argc, char * argv[])
             }
             std::cout << std::endl;
             for(std::string const & obj_filename : obj_filenames) {
-                if(! simulator.loadObjectFile(obj_filename)) {
+                if(! simulator.loadObjFile(obj_filename)) {
                     std::cout << "could not init simulator\n";
                     return 2;
                 }
             }
 
             try {
-                test.test_func(simulator);
+                test.test_func(simulator, sim_inputter);
             } catch(lc3::utils::exception const & e) {
                 std::cout << "Test case ran into exception: " << e.what() << "\n";
                 continue;
@@ -166,22 +165,40 @@ int main(int argc, char * argv[])
     return 0;
 }
 
-bool outputCompare(lc3::utils::IPrinter const & printer, std::string check)
+bool outputCompare(lc3::utils::IPrinter const & printer, std::string check, bool substr)
 {
     BufferedPrinter const & buffered_printer = static_cast<BufferedPrinter const &>(printer);
-    check += "\n\n--- Halting the LC-3 ---\n\n";
 
+    std::cout << check << (substr ? " sub? " : " ?= ");
     for(uint32_t i = 0; i < buffered_printer.display_buffer.size(); i += 1) {
         std::cout << buffered_printer.display_buffer[i];
     }
-    std::cout << " ?= " << check << '\n';
+    std::cout << '\n';
 
-    if(buffered_printer.display_buffer.size() != check.size()) { return false; }
+    if(substr) {
+        bool match = false;
+        for(uint32_t i = 0; i < check.size(); i += 1) {
+            if(i + check.size() >= buffered_printer.display_buffer.size()) { return false; }
 
-    for(uint32_t i = 0; i < check.size(); i += 1) {
-        if(buffered_printer.display_buffer[i] != check[i]) { return false; }
+            match = true;
+            for(uint32_t j = 0; j < check.size(); i += 1) {
+                if(buffered_printer.display_buffer[i] != check[i]) {
+                    match = false;
+                    break;
+                }
+            }
+            if(match) { break; }
+        }
+
+        return match;
+    } else {
+        if(buffered_printer.display_buffer.size() != check.size()) { return false; }
+
+        for(uint32_t i = 0; i < check.size(); i += 1) {
+            if(buffered_printer.display_buffer[i] != check[i]) { return false; }
+        }
+        return true;
     }
-
-    return true;
+    return false;
 }
 
