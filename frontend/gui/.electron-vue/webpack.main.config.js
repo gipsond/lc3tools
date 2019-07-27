@@ -19,7 +19,12 @@ let mainConfig = {
     rules: [
       {
         test: /\.js$/,
-        use: 'babel-loader',
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['env']
+          },
+        },
         exclude: /node_modules/
       },
       {
